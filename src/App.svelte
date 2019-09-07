@@ -3,6 +3,23 @@
 	let hobbyInput;
 	let isLoading = false;
 
+	fetch('https://svelte-jp.firebaseio.com/hobbies.json').then(res => {
+		if (!res.ok) {
+			throw new Error("Failed")
+		}
+		return res.json();
+	}).then(data => {
+		hobbies = Object.values(data)
+		let keys = Object.keys(data)
+		console.log(keys)
+
+		for (const key in data) {
+			console.log(key, data[key])
+		}
+	}).catch(err => {
+		console.log(err)
+	})
+
 	function addHobby() {
 		hobbies = [...hobbies, hobbyInput.value]
 
