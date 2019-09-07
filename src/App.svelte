@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import hobbyStore from './hobby-store.js';
 
 	let hobbies = [];
 	let hobbyInput;
@@ -13,7 +14,8 @@
 			return res.json();
 		}).then(data => {
 			isLoading = false;
-			hobbies = Object.values(data)
+			/*hobbies = Object.values(data)*/
+			hobbyStore.setHobbies(Object.values(data))
 			let keys = Object.keys(data)
 			console.log(keys)
 
@@ -27,7 +29,8 @@
 		})
 
 	function addHobby() {
-		hobbies = [...hobbies, hobbyInput.value]
+		/*hobbies = [...hobbies, hobbyInput.value]*/
+		hobbyStore.addHobby(hobbyInput.value)
 
 		isLoading = true;
 		fetch('https://svelte-jp.firebaseio.com/hobbies.json', {
@@ -56,17 +59,17 @@
 <input type="text" id="hobby" bind:this={hobbyInput}>
 <button on:click={addHobby}>Add Hobby</button>
 
-<!--{#if isLoading}
+{#if isLoading}
 	<p>Loading...</p>
 {:else}
 	<ul>
-		{#each hobbies as hobby}
+		{#each $hobbyStore as hobby}
 			<li>{hobby}</li>
 		{/each}
 	</ul>
-{/if}-->
+{/if}
 
-{#await getHobbies}
+<!--{#await getHobbies}
 	<p>Loading...</p>
 {:then hobbyData}
 	<ul>
@@ -76,5 +79,5 @@
 	</ul>
 {:catch error}
 	<p>{error.message}</p>
-{/await}
+{/await}-->
 
