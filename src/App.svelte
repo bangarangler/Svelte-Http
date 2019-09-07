@@ -1,24 +1,30 @@
 <script>
+	import { onMount } from 'svelte';
+
 	let hobbies = [];
 	let hobbyInput;
 	let isLoading = false;
 
-	fetch('https://svelte-jp.firebaseio.com/hobbies.json').then(res => {
-		if (!res.ok) {
-			throw new Error("Failed")
-		}
-		return res.json();
-	}).then(data => {
-		hobbies = Object.values(data)
-		let keys = Object.keys(data)
-		console.log(keys)
+		isLoading: true;
+		let getHobbies = fetch('https://svelte-jp.firebaseio.com/hobbies.json').then(res => {
+			if (!res.ok) {
+				throw new Error("Failed")
+			}
+			return res.json();
+		}).then(data => {
+			isLoading = false;
+			hobbies = Object.values(data)
+			let keys = Object.keys(data)
+			console.log(keys)
 
-		for (const key in data) {
-			console.log(key, data[key])
-		}
-	}).catch(err => {
-		console.log(err)
-	})
+			for (const key in data) {
+				console.log(key, data[key])
+			}
+			return hobbies;
+		}).catch(err => {
+			isLoading = false;
+			console.log(err)
+		})
 
 	function addHobby() {
 		hobbies = [...hobbies, hobbyInput.value]
@@ -50,7 +56,7 @@
 <input type="text" id="hobby" bind:this={hobbyInput}>
 <button on:click={addHobby}>Add Hobby</button>
 
-{#if isLoading}
+<!--{#if isLoading}
 	<p>Loading...</p>
 {:else}
 	<ul>
@@ -58,5 +64,17 @@
 			<li>{hobby}</li>
 		{/each}
 	</ul>
-{/if}
+{/if}-->
+
+{#await getHobbies}
+	<p>Loading...</p>
+{:then hobbyData}
+	<ul>
+{#each hobbyData as hobby}
+		<li>{hobby}</li>
+	{/each}
+	</ul>
+{:catch error}
+	<p>{error.message}</p>
+{/await}
 
